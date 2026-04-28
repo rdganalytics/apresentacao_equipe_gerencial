@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Estratégias — Equipe de Dados</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #F7F6F2;
+    --surface:  #FFFFFF;
+    --border:   #E2E0D8;
+    --border2:  #C8C6BC;
+    --text-1:   #1A1916;
+    --text-2:   #5C5A54;
+    --text-3:   #9E9C96;
+
+    --blue-50:  #E6F1FB; --blue-600: #185FA5; --blue-800: #0C447C;
+    --green-50: #EAF3DE; --green-600:#3B6D11; --green-800:#27500A;
+    --amber-50: #FAEEDA; --amber-600:#854F0B; --amber-800:#633806;
+    --purple-50:#EEEDFE; --purple-600:#534AB7;--purple-800:#26215C;
+    --pink-50:  #FBEAF0; --pink-600: #993556; --pink-800: #72243E;
+    --teal-50:  #E1F5EE; --teal-600: #0F6E56; --teal-800: #085041;
+
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-1);
+    min-height: 100vh;
+    padding: 40px 24px 60px;
+  }
+
+  .wrapper { max-width: 860px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+  }
+  .header-left h1 {
+    font-size: 22px; font-weight: 500; color: var(--text-1); line-height: 1.2;
+  }
+  .header-left p {
+    font-size: 13px; color: var(--text-3); margin-top: 4px;
+  }
+  .header-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; padding: 4px 10px; border-radius: 4px;
+    background: var(--purple-50); color: var(--purple-800);
+    border: 0.5px solid var(--purple-600); white-space: nowrap;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex; gap: 2px; margin-bottom: 24px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .tab {
+    font-size: 13px; font-weight: 500; padding: 9px 18px; cursor: pointer;
+    border-radius: 6px 6px 0 0; color: var(--text-3);
+    border: 1.5px solid transparent; border-bottom: none;
+    margin-bottom: -1.5px; background: transparent;
+    transition: color .15s, background .15s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text-1); background: var(--surface); }
+  .tab.active {
+    color: var(--text-1); background: var(--surface);
+    border-color: var(--border);
+  }
+
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* Section title */
+  .section-title {
+    font-size: 10px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text-3); margin-bottom: 12px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 10px;
+  }
+  .card-title { font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+  .card-desc  { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    padding: 2px 8px; border-radius: 4px; margin-bottom: 8px;
+  }
+  .badge-blue   { background: var(--blue-50);   color: var(--blue-800);   }
+  .badge-purple { background: var(--purple-50);  color: var(--purple-800); }
+
+  /* Accent bars */
+  .accent-bar {
+    border-left: 3px solid; border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 14px 16px; margin-bottom: 10px; background: var(--bg);
+    border-top: 0.5px solid var(--border); border-right: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border);
+  }
+  .accent-bar.blue   { border-left-color: var(--blue-600); }
+  .accent-bar.green  { border-left-color: var(--green-600); }
+  .accent-bar.amber  { border-left-color: var(--amber-600); }
+  .accent-bar.purple { border-left-color: var(--purple-600); }
+
+  .accent-bar .bar-title {
+    font-size: 13px; font-weight: 500; margin-bottom: 5px; color: var(--text-1);
+  }
+  .accent-bar .bar-desc {
+    font-size: 13px; color: var(--text-2); line-height: 1.65;
+  }
+
+  /* Metrics */
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px; }
+  .metric-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-md); padding: 14px 16px;
+  }
+  .metric-val   { font-size: 24px; font-weight: 500; }
+  .metric-label { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+  /* Chips */
+  .area-chip {
+    display: inline-block; font-size: 11px; padding: 3px 9px;
+    border-radius: 4px; margin: 3px 3px 3px 0;
+    background: var(--surface); color: var(--text-2);
+    border: 0.5px solid var(--border2);
+  }
+
+  /* Future box */
+  .future-box {
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius-lg); padding: 32px 24px;
+    text-align: center; color: var(--text-3); margin-bottom: 10px;
+  }
+  .future-box .ficon { font-size: 28px; margin-bottom: 10px; }
+  .future-box p { font-size: 13px; line-height: 1.7; max-width: 480px; margin: 0 auto; }
+
+  /* ── Organograma ─────────────────────────────── */
+  .org-section { margin-bottom: 32px; }
+  .org-section .section-title { margin-bottom: 16px; }
+
+  .org-wrap { display: flex; flex-direction: column; align-items: center; overflow-x: auto; }
+
+  .ocard {
+    border-radius: 7px; padding: 6px 10px;
+    display: flex; flex-direction: column; gap: 2px;
+    width: 100%;
+  }
+  .ocard .orole { font-size: 9px; }
+  .ocard .oname { font-size: 12px; font-weight: 500; line-height: 1.3; }
+  .ocard .otag  { font-size: 9px; margin-top: 3px; padding: 2px 5px; border-radius: 4px; display: inline-block; align-self: flex-start; }
+
+  .ocard.gerente  { background: #26215C; border: 1.5px solid #534AB7; }
+  .ocard.gerente .orole { color: #AFA9EC; } .ocard.gerente .oname { color: #EEEDFE; }
+
+  .ocard.lbi { background: #0C447C; border: 1.5px solid #378ADD; }
+  .ocard.lbi .orole { color: #85B7EB; } .ocard.lbi .oname { color: #E6F1FB; }
+
+  .ocard.leng { background: #085041; border: 1.5px solid #1D9E75; }
+  .ocard.leng .orole { color: #5DCAA5; } .ocard.leng .oname { color: #E1F5EE; }
+
+  .ocard.lia-open { background: var(--bg); border: 2px dashed #BA7517; }
+  .ocard.lia-open .orole { color: #854F0B; } .ocard.lia-open .oname { color: #BA7517; }
+
+  .ocard.bi  { background: #E6F1FB; border: 1px solid #378ADD; }
+  .ocard.bi .orole { color: #185FA5; } .ocard.bi .oname { color: #0C447C; }
+  .ocard.bi.open  { background: var(--bg); border: 1.5px dashed #378ADD; }
+  .ocard.bi.open .orole { color: #185FA5; } .ocard.bi.open .oname { color: #378ADD; }
+  .ocard.bi.open .otag { background: #B5D4F4; color: #0C447C; }
+
+  .ocard.eng { background: #E1F5EE; border: 1px solid #1D9E75; }
+  .ocard.eng .orole { color: #0F6E56; } .ocard.eng .oname { color: #085041; }
+  .ocard.eng.open { background: var(--bg); border: 1.5px dashed #1D9E75; }
+  .ocard.eng.open .orole { color: #0F6E56; } .ocard.eng.open .oname { color: #1D9E75; }
+  .ocard.eng.open .otag { background: #9FE1CB; color: #085041; }
+
+  .ocard.ia.open { background: var(--bg); border: 1.5px dashed #BA7517; }
+  .ocard.ia.open .orole { color: #854F0B; } .ocard.ia.open .oname { color: #BA7517; }
+  .ocard.ia.open .otag { background: #FAC775; color: #412402; }
+
+  .ocard.agilista { background: #3D1F8C; border: 1.5px solid #7B5DD6; }
+  .ocard.agilista .orole { color: #C4B3F5; } .ocard.agilista .oname { color: #EDE8FD; }
+
+  .ocard.lreq { background: #2C4A3E; border: 1.5px solid #4A7C6F; }
+  .ocard.lreq .orole { color: #A8C5BC; } .ocard.lreq .oname { color: #E8F4F0; }
+
+  .ocard.req { background: #E8F4F0; border: 1px solid #4A7C6F; }
+  .ocard.req .orole { color: #2C4A3E; } .ocard.req .oname { color: #1A3028; }
+  .ocard.req.open { background: var(--bg); border: 1.5px dashed #4A7C6F; }
+  .ocard.req.open .orole { color: #2C4A3E; } .ocard.req.open .oname { color: #4A7C6F; }
+  .ocard.req.open .otag { background: #C5DDD7; color: #1A3028; }
+
+  .gl-req { background: #C5DDD7; color: #1A3028; }
+  .ocard.cs { background: #FBEAF0; border: 1px solid #D4537E; }
+  .ocard.cs .orole { color: #993556; } .ocard.cs .oname { color: #72243E; }
+  .ocard.cs.open { background: var(--bg); border: 1.5px dashed #993556; }
+  .ocard.cs.open .orole { color: #72243E; } .ocard.cs.open .oname { color: #993556; }
+  .ocard.cs.open .otag { background: #F4C0D1; color: #72243E; }
+
+  .ovline { width: 2px; background: #9E9C96; }
+  .ohline { height: 2px; background: #9E9C96; }
+
+  .obranch { display: flex; flex-direction: column; align-items: center; width: 168px; }
+  .ogroup  { display: flex; flex-direction: column; align-items: center; width: 100%; }
+
+  .glabel {
+    font-size: 9px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
+    text-align: center; padding: 2px 7px; border-radius: 4px; margin-bottom: 0; white-space: nowrap;
+  }
+  .gl-bi  { background: #B5D4F4; color: #0C447C; }
+  .gl-eng { background: #9FE1CB; color: #085041; }
+  .gl-ia  { background: #FAC775; color: #633806; }
+  .gl-cs  { background: #F4C0D1; color: #72243E; }
+
+  .org-legend {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin-top: 16px; padding-top: 12px; border-top: 0.5px solid var(--border);
+  }
+  .ol-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-3); }
+  .ol-dot  { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* nav tabs update */
+  .nav-bar {
+    display: flex; gap: 2px; margin-bottom: 24px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .ntab {
+    font-size: 13px; font-weight: 500; padding: 9px 18px; cursor: pointer;
+    border-radius: 6px 6px 0 0; color: var(--text-3);
+    border: 1.5px solid transparent; border-bottom: none;
+    margin-bottom: -1.5px; background: transparent;
+    transition: color .15s, background .15s; user-select: none;
+  }
+  .ntab:hover { color: var(--text-1); background: var(--surface); }
+  .ntab.active { color: var(--text-1); background: var(--surface); border-color: var(--border); }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Footer */
+  .footer {
+    margin-top: 40px; padding-top: 16px;
+    border-top: 0.5px solid var(--border);
+    font-size: 11px; color: var(--text-3);
+    display: flex; justify-content: space-between;
+  }
+
+  @media print {
+    body { background: #fff; padding: 24px; }
+    .nav-bar { display: none; }
+    .section { display: block !important; margin-bottom: 40px; }
+    .section::before {
+      content: attr(data-label);
+      display: block; font-size: 16px; font-weight: 500;
+      margin-bottom: 16px; padding-bottom: 8px;
+      border-bottom: 1.5px solid var(--border);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .grid3 { grid-template-columns: 1fr 1fr; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .tab { padding: 8px 12px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Estratégias &amp; Projetos — Equipe de Dados</h1>
+      <p>Visão consolidada por área · atualizado em 2025</p>
+    </div>
+    <div class="header-badge">INTERNO · DIRETORIA</div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="ntab active" onclick="switchSection('org', this)">Organograma</div>
+    <div class="ntab" onclick="switchSection('bi', this)">Business Intelligence</div>
+    <div class="ntab" onclick="switchSection('eng', this)">Engenharia de Dados</div>
+    <div class="ntab" onclick="switchSection('ciencia', this)">Ciência de Dados</div>
+    <div class="ntab" onclick="switchSection('ia', this)">Inteligência Artificial</div>
+  </div>
+
+  <!-- ORGANOGRAMA -->
+  <div id="sec-org" class="section active" data-label="Organograma da Equipe">
+    <div style="overflow-x:auto;">
+      <div id="org-root" style="position:relative;width:860px;margin:0 auto;font-family:'DM Sans',sans-serif;">
+
+        <!-- SVG de conexões (renderizado via JS após layout) -->
+        <svg id="org-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;">
+          <defs><marker id="none" markerWidth="0" markerHeight="0"/></defs>
+        </svg>
+
+        <!-- ROW 0: Gerente + Agilista (staff) -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;padding-top:12px;">
+          <div id="c-micael" class="ocard gerente" style="width:138px;">
+            <div class="orole">Gerência</div><div class="oname">Micael</div>
+          </div>
+          <div style="width:24px;height:2.5px;background:#6B6965;flex-shrink:0;"></div>
+          <div id="c-agilista" class="ocard agilista" style="width:110px;padding:5px 9px;">
+            <div class="orole" style="font-size:8px;">Agilista</div><div class="oname" style="font-size:11px;">Vaga Aberta</div>
+            <div class="otag" style="background:#E8DFFB;color:#3D1F8C;font-size:8px;">contratando</div>
+          </div>
+        </div>
+
+        <!-- ROW 1: 5 colunas -->
+        <div id="row-lideres" style="display:flex;justify-content:center;gap:10px;margin-top:48px;">
+
+          <div id="col-cs" style="display:flex;flex-direction:column;align-items:center;width:138px;">
+            <div id="c-lcs" class="ocard" style="background:#72243E;border:1.5px solid #D4537E;width:100%;">
+              <div class="orole" style="color:#F4C0D1;font-size:9px;">Líder Técnico — C. Dados</div><div class="oname" style="color:#FDF0F4;">Micael</div>
+            </div>
+            <div style="width:2.5px;height:16px;background:#6B6965;"></div>
+            <div class="glabel gl-cs">Ciência de Dados</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard cs" style="width:100%;"><div class="orole">Cientista de Dados</div><div class="oname">Cristofer</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard cs" style="width:100%;"><div class="orole">Cientista de Dados</div><div class="oname">Leonardo Brasel</div></div>
+          </div>
+
+          <div id="col-bi" style="display:flex;flex-direction:column;align-items:center;width:138px;">
+            <div id="c-lbi" class="ocard lbi" style="width:100%;"><div class="orole">Líder Técnico — BI</div><div class="oname">Renato</div></div>
+            <div style="width:2.5px;height:16px;background:#6B6965;"></div>
+            <div class="glabel gl-bi">Sustentação &amp; Analytics</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard bi" style="width:100%;"><div class="orole">Analytics Engineer</div><div class="oname">Barbara</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard bi" style="width:100%;"><div class="orole">Analytics Engineer</div><div class="oname">Gabriel</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard bi" style="width:100%;"><div class="orole">Analytics Engineer</div><div class="oname">Cristiane</div></div>
+            <div style="width:2.5px;height:10px;background:#6B6965;"></div>
+            <div class="glabel gl-bi">Análise de Negócio</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard bi" style="width:100%;"><div class="orole">Analista BI</div><div class="oname">Roberto</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard bi" style="width:100%;"><div class="orole">Analista BI</div><div class="oname">Fernanda</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard bi" style="width:100%;"><div class="orole">Analista BI</div><div class="oname">Camila</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard bi open" style="width:100%;"><div class="orole">Analytics Engineer</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard bi open" style="width:100%;"><div class="orole">Analista BI</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+          </div>
+
+          <div id="col-eng" style="display:flex;flex-direction:column;align-items:center;width:138px;">
+            <div id="c-leng" class="ocard leng" style="width:100%;"><div class="orole">Líder Técnico — Eng.</div><div class="oname">Silas</div></div>
+            <div style="width:2.5px;height:16px;background:#6B6965;"></div>
+            <div class="glabel gl-eng">Ingestão &amp; Integração</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard eng" style="width:100%;"><div class="orole">Eng. Dados — Ingestão</div><div class="oname">Emerson</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard eng" style="width:100%;"><div class="orole">Eng. Dados — Integração</div><div class="oname">Tinoco</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard eng" style="width:100%;"><div class="orole">Eng. Dados — Integração</div><div class="oname">Cassio</div></div>
+            <div style="width:2.5px;height:10px;background:#6B6965;"></div>
+            <div class="glabel gl-eng">Estruturação</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard eng open" style="width:100%;"><div class="orole">Eng. Dados — Estruturação</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard eng open" style="width:100%;"><div class="orole">Eng. Dados — Estruturação</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+          </div>
+
+          <div id="col-ia" style="display:flex;flex-direction:column;align-items:center;width:138px;">
+            <div id="c-lia" class="ocard lia-open" style="width:100%;"><div class="orole">Líder Técnico — IA</div><div class="oname">Vaga Aberta</div><div class="otag" style="background:#FAC775;color:#412402;">contratando</div></div>
+            <div style="width:2.5px;height:16px;background:#6B6965;"></div>
+            <div class="glabel gl-ia">IA &amp; ML</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard ia open" style="width:100%;"><div class="orole">Engenheiro de IA</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard ia open" style="width:100%;"><div class="orole">Engenheiro de IA</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+          </div>
+
+          <div id="col-req" style="display:flex;flex-direction:column;align-items:center;width:138px;">
+            <div style="width:100%;height:36px;"></div>
+            <div style="width:2.5px;height:16px;background:#6B6965;"></div>
+            <div class="glabel gl-req">Requisitos</div>
+            <div style="width:2.5px;height:6px;background:#6B6965;"></div>
+            <div class="ocard req" style="width:100%;"><div class="orole">Analista de Requisitos</div><div class="oname">Maira</div></div>
+            <div style="width:2.5px;height:5px;background:#6B6965;"></div>
+            <div class="ocard req open" style="width:100%;"><div class="orole">Analista de Requisitos</div><div class="oname">Vaga Aberta</div><div class="otag">contratando</div></div>
+          </div>
+
+        </div><!-- end row-lideres -->
+
+      </div><!-- end org-root -->
+
+      <div class="org-legend" style="margin-top:24px;">
+        <div class="ol-item"><div class="ol-dot" style="background:#185FA5;"></div>Business Intelligence</div>
+        <div class="ol-item"><div class="ol-dot" style="background:#0F6E56;"></div>Engenharia de Dados</div>
+        <div class="ol-item"><div class="ol-dot" style="background:#BA7517;"></div>Inteligência Artificial</div>
+        <div class="ol-item"><div class="ol-dot" style="background:#993556;"></div>Ciência de Dados</div>
+        <div class="ol-item"><div class="ol-dot" style="background:#7B5DD6;"></div>Agilista</div>
+        <div class="ol-item"><div class="ol-dot" style="background:#4A7C6F;"></div>Requisitos</div>
+        <div class="ol-item"><div style="width:18px;height:10px;border:1.5px dashed #9E9C96;border-radius:2px;"></div>Vaga aberta</div>
+      </div>
+    </div>
+
+    <script>
+    (function() {
+      function drawOrg() {
+        var root   = document.getElementById('org-root');
+        var svg    = document.getElementById('org-svg');
+        var micael = document.getElementById('c-micael');
+        var cols   = ['col-cs','col-bi','col-eng','col-ia','col-req'];
+        var LINE   = '#6B6965';
+        var STROKE = 2.5;
+
+        function rel(el) {
+          var rr = root.getBoundingClientRect();
+          var er = el.getBoundingClientRect();
+          return {
+            top:    er.top    - rr.top,
+            bottom: er.bottom - rr.top,
+            left:   er.left   - rr.left,
+            right:  er.right  - rr.left,
+            cx:     (er.left + er.right) / 2 - rr.left,
+            cy:     (er.top  + er.bottom) / 2 - rr.top
+          };
+        }
+
+        function line(x1,y1,x2,y2,dash) {
+          var l = document.createElementNS('http://www.w3.org/2000/svg','line');
+          l.setAttribute('x1',x1); l.setAttribute('y1',y1);
+          l.setAttribute('x2',x2); l.setAttribute('y2',y2);
+          l.setAttribute('stroke',LINE);
+          l.setAttribute('stroke-width',STROKE);
+          if(dash) l.setAttribute('stroke-dasharray','6,4');
+          svg.appendChild(l);
+        }
+
+        svg.innerHTML = '';
+        svg.setAttribute('height', root.offsetHeight);
+
+        var m   = rel(micael);
+        var mBx = m.cx;   // bottom-center x of Micael
+        var mBy = m.bottom;
+
+        // Vertical drop from Micael down to horizontal bus
+        var busY = mBy + 28;
+        line(mBx, mBy, mBx, busY);
+
+        // Collect top-center of each leader card (first child of each col div)
+        var colEls = cols.map(function(id){ return document.getElementById(id); });
+        var tops   = colEls.map(function(col){
+          var firstCard = col.querySelector('.ocard');
+          if(!firstCard) {
+            // col-req has spacer first — get second child
+            firstCard = col.children[1];
+          }
+          var r = rel(firstCard);
+          return { cx: rel(col).cx, topY: r.top };
+        });
+
+        // Horizontal bus from leftmost to rightmost column centre
+        var leftX  = tops[0].cx;
+        var rightX = tops[tops.length-1].cx;
+        line(leftX, busY, rightX, busY);
+
+        // Drop from bus to each leader
+        tops.forEach(function(t, i) {
+          var isReq = (i === 4); // Requisitos has no leader card, connect to first member
+          line(t.cx, busY, t.cx, t.topY, false);
+        });
+
+        // Resize svg height
+        svg.setAttribute('height', root.scrollHeight + 20);
+      }
+
+      if(document.readyState === 'complete') { drawOrg(); }
+      else { window.addEventListener('load', drawOrg); }
+      window.addEventListener('resize', drawOrg);
+    })();
+    </script>
+  </div>
+
+  <!-- BI -->
+  <div id="sec-bi" class="section" data-label="Business Intelligence">
+
+    <div class="grid3">
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--blue-800)">1</div>
+        <div class="metric-label">Projeto em desenvolvimento</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--green-800)">8</div>
+        <div class="metric-label">Áreas com analistas próprios</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--amber-800)">15 dias</div>
+        <div class="metric-label">Ciclo de sprint de entregas</div>
+      </div>
+    </div>
+
+    <div class="section-title">Projeto ativo</div>
+    <div class="card">
+      <div class="badge badge-blue">Em desenvolvimento</div>
+      <div class="card-title">MedMetrics — indicadores expresso</div>
+      <div class="card-desc">Plataforma de autoatendimento analítico para gestores e setores estratégicos. Permite geração autônoma de indicadores sem depender diretamente da equipe de BI, reduzindo solicitações pontuais e liberando o time para foco em dashboards e análises de maior complexidade.</div>
+    </div>
+
+    <div class="section-title" style="margin-top:22px">Estratégias de operação</div>
+
+    <div class="accent-bar blue">
+      <div class="bar-title">Modelo de BI distribuído</div>
+      <div class="bar-desc">Áreas de negócio contam com analistas próprios que criam análises de forma autônoma, com acesso a dados compartilhados e governados pela equipe de dados. Isso amplifica a capacidade analítica da empresa sem sobrecarregar o time central.</div>
+      <div style="margin-top:10px">
+        <span class="area-chip">RH</span><span class="area-chip">Contas Médicas</span><span class="area-chip">DAC</span><span class="area-chip">Suprimentos</span><span class="area-chip">Manutenção</span><span class="area-chip">OPME</span><span class="area-chip">Inteligência de Mercado</span><span class="area-chip">Call Center</span>
+      </div>
+    </div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">Analistas de negócio focados em setores estratégicos</div>
+      <div class="bar-desc">Equipe interna de BI realiza análises elaboradas para áreas que demandam maior profundidade analítica.</div>
+      <div style="margin-top:10px">
+        <span class="area-chip">Credenciamento</span><span class="area-chip">Gestão de contratos</span><span class="area-chip">BEM</span><span class="area-chip">Operação</span><span class="area-chip">Controladoria</span>
+      </div>
+    </div>
+
+    <div class="accent-bar amber">
+      <div class="bar-title">Governança de demandas — aprovação por gestores</div>
+      <div class="bar-desc">Novos desenvolvimentos são priorizados somente mediante solicitação ou aprovação do gestor da área solicitante, garantindo alinhamento estratégico e evitando retrabalho.</div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #F5D9B0;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <div style="font-size:20px;line-height:1;flex-shrink:0;">🏅</div>
+          <div>
+            <div style="font-size:12px;font-weight:500;color:#412402;margin-bottom:3px;">Selos de aprovação das áreas de negócio</div>
+            <div style="font-size:12px;color:#633806;line-height:1.6;">Os indicadores entregues passarão por homologação formal das áreas solicitantes. Cada área atesta que o dado apresentado é fidedigno à sua realidade operacional, conferindo credibilidade institucional aos painéis e reduzindo questionamentos sobre a veracidade das informações.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accent-bar purple">
+      <div class="bar-title">Sprints de 15 dias — ritmo e previsibilidade</div>
+      <div class="bar-desc">As demandas de BI são organizadas em ciclos de 15 dias. Isso traz previsibilidade para as áreas solicitantes, facilita a priorização, distribui melhor a carga do time e cria um ritmo de entregas contínuo e rastreável — tornando visível para a diretoria o que está sendo produzido e em que prazo.</div>
+    </div>
+
+  </div>
+
+  <!-- ENGENHARIA -->
+  <div id="sec-eng" class="section" data-label="Engenharia de Dados">
+
+    <div class="grid3" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--teal-800)">R$ 3mi</div>
+        <div class="metric-label">Economia anual com migração Databricks</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--teal-800)">R$ 5mi</div>
+        <div class="metric-label">Meta de economia com novas migrações</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--teal-800)">6</div>
+        <div class="metric-label">Itens no catálogo de iniciativas</div>
+      </div>
+    </div>
+
+    <div class="section-title">Catálogo de iniciativas — entregas recorrentes</div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">Migrações Databricks (Zetabricks)</div>
+      <div class="bar-desc">Dois projetos de migração mapeados: o atual em fase de finalização e novos a serem iniciados. A migração já realizada gerou economia de R$ 3 milhões/ano. A estratégia é ampliar esse resultado levantando outras estruturas passíveis de migração e apresentar o argumento de economia para obter aprovação da liderança.</div>
+    </div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">CDC — Change Data Capture (TOP e TASI)</div>
+      <div class="bar-desc">Arquitetura de captura de dados do TOP e TASY já desenhada. Reunião com a Oracle em andamento para proposta com valor diferenciado. Levantamentos do TASY, MXM e demais sistemas já enviados.</div>
+    </div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">Dicionário de Dados</div>
+      <div class="bar-desc">Identificado como projeto estruturante e prioritário. Problema recorrente de ausência de padronização entre sistemas. A solução exige ferramenta adequada (não Word/Excel), fluxo documentado de entrada de novos dados, regras de conformidade e rastreabilidade histórica de beneficiários. Uma camada arquitetural acima do sistema TOP será necessária para consolidar o histórico.</div>
+    </div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">Governança e Controle de Acesso — Data Marts</div>
+      <div class="bar-desc">A camada ouro será rigidamente protegida: nenhuma carga poderá ser alterada sem fluxo formal de controle. Analistas de BI das áreas de negócio terão acesso somente ao Data Mart do seu domínio, com dados desnormalizados, mascaramento de dados sensíveis (CPF, endereço, condição médica) e controle de acesso documentado. A estrutura já existe parcialmente no Postgres.</div>
+    </div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">Barramento de Dados</div>
+      <div class="bar-desc">Iniciativa a ser alinhada com a equipe de desenvolvimento e avaliada no Azure. Compõe a estratégia de centralização e governança do fluxo de dados da organização.</div>
+    </div>
+
+    <div class="accent-bar green">
+      <div class="bar-title">Migração e Absorção de ULA</div>
+      <div class="bar-desc">Levantamento e absorção da estrutura ULA pela equipe de dados, como parte da estratégia de ampliar a governança e reduzir custos de infraestrutura.</div>
+    </div>
+
+    <div class="section-title" style="margin-top:20px;">Monitoramento operacional</div>
+    <div class="accent-bar blue">
+      <div class="bar-title">Painel de monitoramento de cargas</div>
+      <div class="bar-desc">Painel já desenvolvido, porém não publicado. Decisão: publicar em TV/monitor da equipe com indicadores visuais (verde, amarelo, vermelho). Meta futura: criar uma API para expor o status das cargas em tempo real.</div>
+    </div>
+
+  </div>
+
+  <!-- CIÊNCIA -->
+  <div id="sec-ciencia" class="section" data-label="Ciência de Dados">
+
+    <div class="grid3" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--pink-800)">2</div>
+        <div class="metric-label">Cientistas de dados na equipe</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--pink-800)">5</div>
+        <div class="metric-label">Iniciativas identificadas</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--pink-800)">1</div>
+        <div class="metric-label">Projeto em andamento</div>
+      </div>
+    </div>
+
+    <div class="section-title">Iniciativas identificadas</div>
+
+    <div class="accent-bar" style="border-left-color:#993556;">
+      <div class="badge" style="background:var(--pink-50);color:var(--pink-800);margin-bottom:8px;">Em andamento</div>
+      <div class="bar-title">Projeto câncer de mama</div>
+      <div class="bar-desc">Projeto já em andamento. Escopo macro a ser detalhado com Christopher. Representa a primeira iniciativa concreta da área de ciência de dados aplicada à saúde assistencial.</div>
+    </div>
+
+    <div class="accent-bar" style="border-left-color:#993556;">
+      <div class="bar-title">Visão 360 do Beneficiário</div>
+      <div class="bar-desc">Análise da jornada completa do beneficiário, incluindo inadimplência, despesas, receitas, histórico de uso do plano e perfil de risco. Projeto de alto impacto estratégico para a gestão da carteira.</div>
+    </div>
+
+    <div class="accent-bar" style="border-left-color:#993556;">
+      <div class="bar-title">Estudo da carteira</div>
+      <div class="bar-desc">Análise do comportamento financeiro e assistencial do beneficiário ao longo do tempo. Subsidia decisões de precificação, retenção e gestão de risco atuarial.</div>
+    </div>
+
+    <div class="accent-bar" style="border-left-color:#993556;">
+      <div class="bar-title">Programa de pontos e benefícios — hábitos saudáveis</div>
+      <div class="bar-desc">Iniciativa de engajamento do beneficiário atrelada a hábitos saudáveis (exercício físico, alimentação, check-ups), com referência a modelos internacionais como a Prudential. Visa reduzir sinistralidade e aumentar adesão preventiva.</div>
+    </div>
+
+    <div class="accent-bar" style="border-left-color:#993556;">
+      <div class="bar-title">Integração com o Programa Bem Envelhecer</div>
+      <div class="bar-desc">Obtenção de indicadores classificatórios de saúde integrados ao programa Bem Envelhecer. Alinhamento a ser realizado diretamente com a equipe do programa para definição de escopo e dados disponíveis.</div>
+    </div>
+
+  </div>
+
+  <!-- IA -->
+  <div id="sec-ia" class="section" data-label="Inteligência Artificial">
+
+    <div class="grid3" style="margin-bottom:20px;">
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--amber-800)">P1</div>
+        <div class="metric-label">Definição de arquitetura de IA</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" style="color:var(--amber-800)">P2</div>
+        <div class="metric-label">Estrutura de multiagentes</div>
+      </div>
+
+    </div>
+
+    <div class="section-title">Prioridades estratégicas</div>
+
+    <div class="accent-bar amber">
+      <div class="badge" style="background:var(--amber-50);color:var(--amber-800);margin-bottom:8px;">Prioridade 1</div>
+      <div class="bar-title">Definição da arquitetura de IA</div>
+      <div class="bar-desc">Pré-requisito para qualquer comprometimento de entrega. Antes de avançar com produtos de IA, é necessário definir a arquitetura macro, o dicionário de dados e apresentar a lista de pré-requisitos à liderança. Inclui estratégias de segurança, privacidade e governança de dados no uso de modelos.</div>
+    </div>
+
+    <div class="accent-bar amber">
+      <div class="badge" style="background:var(--amber-50);color:var(--amber-800);margin-bottom:8px;">Prioridade 2</div>
+      <div class="bar-title">Estrutura de multiagentes</div>
+      <div class="bar-desc">Desenvolvimento de agentes especializados para tarefas específicas: transcrição, OCR, suporte à gestão de inadimplência e outros a definir.</div>
+    </div>
+
+    <div class="section-title" style="margin-top:20px;">Infraestrutura e custos</div>
+
+    <div class="accent-bar" style="border-left-color:#BA7517;">
+      <div class="bar-title">Gestão de custos de tokens e APIs de IA</div>
+      <div class="bar-desc">A equipe de desenvolvimento já utiliza o Codex, mas sem controle visível de custo. Decisão: implementar metodologias de economia de tokens e arquitetura de controle de custos de APIs de IA, com alinhamento entre as equipes.</div>
+    </div>
+
+    <div class="accent-bar" style="border-left-color:#BA7517;">
+      <div class="bar-title">Máquina GPU "Dora" — ativação para estudos</div>
+      <div class="bar-desc">Máquina com GPU disponível. Precisamos avaliar o uso para estudos de ciência de dados e uso geral de desenvolvimento.</div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <span>Equipe de Dados · uso interno</span>
+    <span id="datestamp"></span>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById('datestamp').textContent = new Date().toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  function switchSection(id, el) {
+    document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('sec-' + id).classList.add('active');
+  }
+</script>
+</body>
+</html>
